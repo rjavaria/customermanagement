@@ -1,0 +1,193 @@
+openapi: 3.0.0
+info:
+  version: 'v1'
+  title: 'Customer Profile API'
+  description: 'An API that allows the customers of the organisation to manage their profile'
+  termsOfService: https://api.myorg.com/terms-of-use
+  contact:
+    name: Rajesh Javaria
+    url: myorg.com
+    email: rajesh.javaria@gmail.com
+  license:
+    name: myorg License
+    url: api.license.myorg.com
+    
+servers: 
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/rjavaria/CUST_PROFILE_OAS3.0/v1
+    
+  - url: https://localhost/profile/v1
+    description: Development and Integration Server
+    
+  - url: https://api.myorg.com/profile/v1
+    description: Production Server
+
+paths:
+  /customers:
+    post:
+      description: Create a new customer account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer'
+              
+      responses:
+        200:
+          description: Successfully created a new customer.
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        5XX:
+          description: Unexpected error. 
+          
+  /customers/{accountid}:
+    parameters:
+      - in: path
+        name: accountid
+        schema:
+          type: string
+        required: true
+        description: The account id of customer.
+          
+    put:
+      description: Modify customer account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer'
+              
+      responses:
+        200:
+          description: Successfully updated the customer.
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        5XX:
+          description: Unexpected error. 
+    
+    delete:
+      description: Delete a customer profile.
+      
+      responses:
+        200:
+          description: Successfully deleted the customer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        5XX:
+          description: Unexpected error. 
+          
+    get:
+      description: Get a customer profile.
+        
+      responses:
+        200:
+          description: Successfully retrieved the customer profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        5XX:
+          description: Unexpected error.
+          
+components:
+  schemas:
+    customer:
+      properties:
+        accountid:
+          type: string
+          example: rjavaria
+                
+        firstname:
+          type: string
+          example: Rajesh
+              
+        lastname:
+          type: string
+          example: Javaria
+            
+        title:
+          type: string
+          example: Mr.
+              
+        dob:
+          type: string
+          example: 01/01/1985
+          
+        email:
+          type: string
+          example: rajesh.javaria@gmail.com
+        
+        homeaddress: 
+          $ref: '#/components/schemas/address'
+          
+        officeaddress: 
+          $ref: '#/components/schemas/address'
+    
+    address:
+      properties:
+        street:
+          type: string
+          example: 21, Best Road
+          
+        suburb:
+          type: string
+          example: Seven Hills
+          
+        postcode:
+          type: string
+          example: 2147
+          
+        state:
+          type: string
+          example: NSW
+          
+    error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+      - code
+      - message    
+      
+  responses:
+      NotFound:
+        description: Customer profile not found.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/error'
+      Unauthorized:
+        description: Authorization information is missing or invalid.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/error'
+      BadRequest:
+        description: Invalid Customer account id supplied.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/error'
